@@ -3,11 +3,11 @@ import java.util.Scanner;
 
 public class Play {
 
-     int boardSize;
+     int tahtaBuyuklugu;
      int[]gemiBoyutlari = {1,2,3,4};
      String cevapSeviye;
-     String[][] board;
-     Scanner answ = new Scanner(System.in);
+     String[][] tahta;
+     Scanner cvp = new Scanner(System.in);
      boolean kuralDisiMi;
 
      public void oyunaGiris()
@@ -15,27 +15,25 @@ public class Play {
        System.out.println("Amiral Battı Oyunu'na Hoş Geldiniz! :)");
        System.out.println("Oynamak istediğiniz zorluk seviyesini giriniz: ");
        System.out.println("Kolay - Orta - Zor");
-      
-       
        do{ //doğru string girilene kadar döngüde
        kuralDisiMi = false;
        
        try {
-       cevapSeviye=answ.next();
+       cevapSeviye= cvp.next();
        if(cevapSeviye.equalsIgnoreCase("kolay"))
        {
-         boardSize = 6; //5*5lik tahta
+         tahtaBuyuklugu = 6; //5*5lik tahta
          kuralDisiMi = false;
        }
 
        else if(cevapSeviye.equalsIgnoreCase("orta"))
        {
-        boardSize = 8; //7*7lik tahta
+        tahtaBuyuklugu = 8; //7*7lik tahta
         kuralDisiMi = false;
        }
        else if(cevapSeviye.equalsIgnoreCase("zor"))
        {
-        boardSize = 11; //10*10luk tahta
+        tahtaBuyuklugu = 11; //10*10luk tahta
         kuralDisiMi = false;
        }
        else
@@ -61,7 +59,7 @@ public class Play {
         do{
             kuralDisiMi = false;
         try {
-            cevapKimle = answ.nextInt();
+            cevapKimle = cvp.nextInt();
             if (cevapKimle == 1) {
                 System.out.println("Bilgisayarla oynayacaksınız.");
                 kuralDisiMi = false;
@@ -73,7 +71,7 @@ public class Play {
             
         } catch (Exception e) {
             System.out.print("Geçerli bir sayı girin: ");
-            answ.next();
+            cvp.next();
             kuralDisiMi = true;
         }
             }while(kuralDisiMi);
@@ -87,12 +85,12 @@ public class Play {
 
      public void tahtayiDoldur()//ortak tahta
     {
-        board = new String[boardSize][boardSize];
-        for(int i=1; i<boardSize;i++)
+        tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
+        for(int i=1; i<tahtaBuyuklugu;i++)
         {
-            for(int j=1; j<boardSize;j++)
+            for(int j=1; j<tahtaBuyuklugu;j++)
             {
-                board[i][j]= "~ ";
+                tahta[i][j]= "0 ";
             }
         }
     }
@@ -104,44 +102,92 @@ public class Play {
         for (int i = 0; i < gemiBoyutlari.length; i++) {//gemiyi rastgele yerleştir.
             int gemiBoyutu = gemiBoyutlari[i]; 
             int randomRow, randomCol;
+            boolean gemiYatayMi;
             do {
-                randomRow = rndGemi.nextInt(boardSize);
-                randomCol = rndGemi.nextInt(boardSize);
-            } while (!gemininKonumuDogruMu(randomRow, randomCol, gemiBoyutu));
+                randomRow = rndGemi.nextInt(tahtaBuyuklugu);
+                randomCol = rndGemi.nextInt(tahtaBuyuklugu);
+                gemiYatayMi = rndGemi.nextBoolean();//geminin yatay / dikey random karar verilmesi.
+            } while (!gemininKonumuDogruMu(gemiYatayMi,randomRow, randomCol, gemiBoyutu));
 
-            for (int j = 0; j < gemiBoyutu; j++) {
-                board[randomRow + j][randomCol] = "G ";//geminin dikey yerleştirilmesi
+            for (int j = 0; j < gemiBoyutu; j++) {//geminin dikey yerleştirilmesi
+                if(gemiYatayMi==false)//dikey
+                {
+                if(gemiBoyutu==1)
+                tahta[randomRow + j][randomCol] = "1 ";
+
+                else if(gemiBoyutu==2)
+                tahta[randomRow + j][randomCol] = "2 ";
+
+                else if(gemiBoyutu==3)
+                tahta[randomRow + j][randomCol] = "3 ";
+
+                else
+                tahta[randomRow + j][randomCol] = "4 ";
+                }
+
+                else 
+                {
+                if(gemiBoyutu==1)
+                tahta[randomRow][randomCol+j] = "1 ";
+
+                else if(gemiBoyutu==2)
+                tahta[randomRow][randomCol+j] = "2 ";
+
+                else if(gemiBoyutu==3)
+                tahta[randomRow][randomCol+j] = "3 ";
+
+                else
+                tahta[randomRow][randomCol+j] = "4 ";
+                }
+
             }
             
         }
     }
 
-    private boolean gemininKonumuDogruMu(int row, int col, int gemiBoyutu) {
-        if (row + gemiBoyutu > boardSize) {
+    private boolean gemininKonumuDogruMu(boolean gemiYatayMi, int row, int col, int gemiBoyutu) {
+        if(gemiYatayMi==false)
+        {
+        if (row + gemiBoyutu > tahtaBuyuklugu) {
             return false;
         }
 
         for (int i = 0; i < gemiBoyutu; i++) {//her birimi tek tek kontrol.
-            if (board[row + i][col] != "~ ") {//dalga yoksa false dönecek.
+            if (tahta[row + i][col] != "0 ") {//dalga yoksa false dönecek.
                 return false;
             }
             
         }
+        }
+
+        else
+         {
+        if (col + gemiBoyutu > tahtaBuyuklugu) {
+            return false;
+        }
+        for (int i = 0; i < gemiBoyutu; i++) {//her birimi tek tek kontrol.
+            if (tahta[row][col+i] != "0 ") {//dalga yoksa false dönecek.
+                return false;
+            }
+            
+        }
+        }
         return true;
+    
     }
 
     public void tahtayiYazdir()
     {
-        for(int ust=1; ust<boardSize; ust++)
+        for(int ust=1; ust<tahtaBuyuklugu; ust++)
         {
             System.out.print(" " + ust + " ");
 
         }
         System.out.println();
-        for (int satir = 1; satir <boardSize; satir++) {
+        for (int satir = 1; satir <tahtaBuyuklugu; satir++) {
             System.out.print(satir + " ");
-            for (int sutun = 1; sutun < boardSize; sutun++) {
-                System.out.print(board[satir][sutun] + " ");
+            for (int sutun = 1; sutun < tahtaBuyuklugu; sutun++) {
+                System.out.print(tahta[satir][sutun] + " ");
             }
             System.out.println();
         }
