@@ -109,7 +109,7 @@ public class Play {
                 gemiYatayMi = rndGemi.nextBoolean();//geminin yatay / dikey random karar verilmesi.
             } while (!gemininKonumuDogruMu(gemiYatayMi,randomRow, randomCol, gemiBoyutu));
 
-            for (int j = 0; j < gemiBoyutu; j++) {//geminin dikey yerleştirilmesi
+            for (int j = 0; j < gemiBoyutu; j++) {//geminin yerleştirilmesi
                 if(gemiYatayMi==false)//dikey
                 {
                 if(gemiBoyutu==1)
@@ -125,7 +125,7 @@ public class Play {
                 tahta[randomRow + j][randomCol] = "4 ";
                 }
 
-                else 
+                else //yatay
                 {
                 if(gemiBoyutu==1)
                 tahta[randomRow][randomCol+j] = "1 ";
