@@ -83,7 +83,7 @@ public class Play {
             kullaniciGemileriniYerlestir();
             
         } else   {
-            // Arkadaşınızla oynamak için gerekli işlemleri yapabilirsiniz.
+            
         }
     }
     
