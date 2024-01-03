@@ -3,11 +3,11 @@ import java.util.Scanner;
 
 public class Play {
 
-    int tahtaBuyuklugu;
+   static int tahtaBuyuklugu;
     int[] gemiBoyutlari = {1, 2, 3, 4};
-    String[][] kullanici1Tahta;
-    String[][] kullanici2Tahta;
-    String[][] bilgisayarTahta;
+   static String[][] kullanici1Tahta;
+   static String[][] kullanici2Tahta;
+   static String[][] bilgisayarTahta;
     Scanner cvp = new Scanner(System.in);
     boolean kuralDisiMi;
 
@@ -76,6 +76,7 @@ public class Play {
             gemileriYerlestir(bilgisayarTahta);
             tahtayiYazdir(kullanici1Tahta);
             kullaniciGemileriniYerlestir(kullanici1Tahta);
+            bilgisayarTahtasiniYazdir(bilgisayarTahta);
         } else {
             System.out.println("Arkadaşınızla oynayacaksınız.");
             kullanici1Tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
@@ -105,7 +106,7 @@ public class Play {
             while (!gecerliGiris) {
                 try {
                     System.out.println("Yerleştirmek istediğiniz " + gemiBoyutu + " birimlik geminin konumunu girin.");
-                    System.out.print("Satır (1-" + (tahtaBuyuklugu - 1) + "): ");
+                    System.out.print("Satır (1-" + (tahtaBuyuklugu - 1) + "): ");//5*5lik tahta ama 6'ya kadar gidiyor
                     int satir = cvp.nextInt();
 
                     System.out.print("Sütun (1-" + (tahtaBuyuklugu - 1) + "): ");
@@ -206,6 +207,20 @@ public class Play {
     }
 
     public void tahtayiYazdir(String[][] tahta) {//ortak tahta
+        for (int ust = 1; ust < tahtaBuyuklugu; ust++) {
+            System.out.print(" " + ust + " ");
+        }
+        System.out.println();
+        for (int satir = 1; satir < tahtaBuyuklugu; satir++) {
+            System.out.print(satir + " ");
+            for (int sutun = 1; sutun < tahtaBuyuklugu; sutun++) {
+                System.out.print(tahta[satir][sutun] + " ");
+            }
+            System.out.println();
+        }
+    }
+    public void bilgisayarTahtasiniYazdir(String[][] tahta) {
+        System.out.println("Bilgisayar Tahtası:");
         for (int ust = 1; ust < tahtaBuyuklugu; ust++) {
             System.out.print(" " + ust + " ");
         }
