@@ -1,15 +1,13 @@
-import java.util.Random;
+
+
 import java.util.Scanner;
 
 public class Play {
-
-   static int tahtaBuyuklugu;
-    int[] gemiBoyutlari = {1, 2, 3, 4};
-   static String[][] kullanici1Tahta;
-   static String[][] kullanici2Tahta;
-   static String[][] bilgisayarTahta;
-    Scanner cvp = new Scanner(System.in);
-    boolean kuralDisiMi;
+    static int tahtaBuyuklugu;
+    int ekle = 0;
+    static int[] gemiBoyutlari = {1, 2, 3, 4};
+    static Scanner cvp = new Scanner(System.in);
+    static boolean kuralDisiMi;
 
     public void oyunaGiris() {
         System.out.println("Amiral Battı Oyunu'na Hoş Geldiniz! :)");
@@ -21,13 +19,13 @@ public class Play {
             try {
                 String cevapSeviye = cvp.next();
                 if (cevapSeviye.equalsIgnoreCase("kolay")) {
-                    tahtaBuyuklugu = 6; // 5*5lik tahta
+                    tahtaBuyuklugu = 8; // 8*8lik tahta
                     kuralDisiMi = false;
                 } else if (cevapSeviye.equalsIgnoreCase("orta")) {
-                    tahtaBuyuklugu = 8; // 7*7lik tahta
+                    tahtaBuyuklugu = 10; // 10*10lik tahta
                     kuralDisiMi = false;
                 } else if (cevapSeviye.equalsIgnoreCase("zor")) {
-                    tahtaBuyuklugu = 11; // 10*10luk tahta
+                    tahtaBuyuklugu = 12; // 12*12 luk tahta
                     kuralDisiMi = false;
                 } else {
                     throw new IllegalArgumentException("Lütfen geçerli bir zorluk seviyesi giriniz: ");
@@ -38,10 +36,9 @@ public class Play {
             }
         } while (kuralDisiMi);
 
-        kimleOynaniyor();
     }
 
-    public void kimleOynaniyor() {
+    public static int kimleOynaniyor() {
         int cevapKimle = 0;
 
         do {
@@ -53,8 +50,6 @@ public class Play {
                 if (cevapKimle == 1) {
                     kuralDisiMi = false;
                 } else if (cevapKimle == 2) {
-                    
-
                     kuralDisiMi = false;
                 } else {
                     throw new IllegalArgumentException("Geçerli bir sayı girin: ");
@@ -66,99 +61,46 @@ public class Play {
                 kuralDisiMi = true;
             }
         } while (kuralDisiMi);
-
-        if (cevapKimle == 1) {
-            System.out.println("Bilgisayarla oynayacaksınız.");
-            kullanici1Tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
-            bilgisayarTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
-            tahtayiDoldur(kullanici1Tahta);
-            tahtayiDoldur(bilgisayarTahta);
-            gemileriYerlestir(bilgisayarTahta);
-            tahtayiYazdir(kullanici1Tahta);
-            kullaniciGemileriniYerlestir(kullanici1Tahta);
-            bilgisayarTahtasiniYazdir(bilgisayarTahta);
-        } else {
-            System.out.println("Arkadaşınızla oynayacaksınız.");
-            kullanici1Tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
-            kullanici2Tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
-            tahtayiDoldur(kullanici1Tahta);
-            kullaniciGemileriniYerlestir(kullanici1Tahta);
-            tahtayiYazdir(kullanici1Tahta);
-            System.out.println("Sıra arkadaşınızda!!");
-            tahtayiDoldur(kullanici2Tahta);
-            kullaniciGemileriniYerlestir(kullanici2Tahta);
-            tahtayiYazdir(kullanici2Tahta);
-            
-        }
+        return cevapKimle;
     }
-    public void tahtayiDoldur(String[][] tahta) {
-        for (int i = 1; i < tahtaBuyuklugu; i++) {
-            for (int j = 1; j < tahtaBuyuklugu; j++) {
+
+
+    public static void tahtayiDoldur(String[][] tahta) {
+        for (int i = 0; i < tahtaBuyuklugu; i++) {
+            for (int j = 0; j < tahtaBuyuklugu; j++) {
                 tahta[i][j] = "0 ";
             }
         }
+
     }
 
-    public void kullaniciGemileriniYerlestir(String[][] kullaniciTahta) {
-        for (int gemiBoyutu : gemiBoyutlari) {
-            boolean gecerliGiris = false;
 
-            while (!gecerliGiris) {
-                try {
-                    System.out.println("Yerleştirmek istediğiniz " + gemiBoyutu + " birimlik geminin konumunu girin.");
-                    System.out.print("Satır (1-" + (tahtaBuyuklugu - 1) + "): ");//5*5lik tahta ama 6'ya kadar gidiyor
-                    int satir = cvp.nextInt();
 
-                    System.out.print("Sütun (1-" + (tahtaBuyuklugu - 1) + "): ");
-                    int sutun = cvp.nextInt();
+    /*private boolean kullaniciGemininKonumuDogruMu(boolean gemiYatayMi, int satir, int sutun, int gemiBoyutu, String[][] tahta) {
+        if (gemiYatayMi == false) {
+            if (satir + gemiBoyutu > tahtaBuyuklugu) {
+                return false;
+            }
 
-                    System.out.print("Yatay mı (1) Dikey mi (2): ");
-                    int yatayDikeySecim = cvp.nextInt();
-
-                    boolean yatayMi = (yatayDikeySecim == 1);
-
-                    gecerliGiris = kullaniciGemininKonumuDogruMu(yatayMi, satir, sutun, gemiBoyutu, kullaniciTahta);
-
-                    if (gecerliGiris) {
-                        for (int j = 0; j < gemiBoyutu; j++) {
-                            if (yatayMi)
-                                kullaniciTahta[satir][sutun + j] = Integer.toString(gemiBoyutu) + " ";
-                            else
-                                kullaniciTahta[satir + j][sutun] = Integer.toString(gemiBoyutu) + " ";
-                        }
-                        tahtayiYazdir(kullaniciTahta);
-                    } else {
-                        System.out.println("Geçersiz konum, lütfen tekrar deneyin.");
-                    }
-                } catch (Exception e) {
-                    System.out.println("Hata oluştu, lütfen tekrar deneyin.");
-                    cvp.next(); // Hatalı girişi temizliyor
+            for (int i = 0; i < gemiBoyutu; i++) {
+                if (!"0 ".equals(tahta[satir + i][sutun])) {
+                    return false;
+                }
+            }
+        } else {
+            if (sutun + gemiBoyutu > tahtaBuyuklugu) {
+                return false;
+            }
+            for (int i = 0; i < gemiBoyutu; i++) {
+                if (!"0 ".equals(tahta[satir][sutun + i])) {
+                    return false;
                 }
             }
         }
-    }
+        return true;
+    }*/
 
-    public void gemileriYerlestir(String[][] tahta) {
-        Random rndGemi = new Random();
-        for (int gemiBoyutu : gemiBoyutlari) {
-            int randomSatir, randomSutun;
-            boolean gemiYatayMi;
-            do {
-                randomSatir = rndGemi.nextInt(tahtaBuyuklugu);
-                randomSutun = rndGemi.nextInt(tahtaBuyuklugu);
-                gemiYatayMi = rndGemi.nextBoolean();
-            } while (!gemininKonumuDogruMu(gemiYatayMi, randomSatir, randomSutun, gemiBoyutu, tahta));
-
-            for (int j = 0; j < gemiBoyutu; j++) {
-                if (gemiYatayMi)
-                    tahta[randomSatir][randomSutun + j] = Integer.toString(gemiBoyutu) + " ";
-                else
-                    tahta[randomSatir + j][randomSutun] = Integer.toString(gemiBoyutu) + " ";
-            }
-        }
-    }
-
-    private boolean kullaniciGemininKonumuDogruMu(boolean gemiYatayMi, int satir, int sutun, int gemiBoyutu, String[][] tahta) {
+    public static boolean gemininKonumuDogruMu(boolean gemiYatayMi, int satir, int sutun, int gemiBoyutu, String[][] tahta) {
         if (gemiYatayMi == false) {
             if (satir + gemiBoyutu > tahtaBuyuklugu) {
                 return false;
@@ -182,55 +124,32 @@ public class Play {
         return true;
     }
 
-    private boolean gemininKonumuDogruMu(boolean gemiYatayMi, int satir, int sutun, int gemiBoyutu, String[][] tahta) {
-        if (gemiYatayMi == false) {
-            if (satir + gemiBoyutu > tahtaBuyuklugu) {
-                return false;
+    public static void tahtayiYazdir(String[][] tahta) {//ortak tahta
+        System.out.print("  ");
+        for (int ust = 1; ust <= tahtaBuyuklugu; ust++) {
+            if(ust>10){
+                System.out.print(" " + ust + " ");
             }
-
-            for (int i = 0; i < gemiBoyutu; i++) {
-                if (!"0 ".equals(tahta[satir + i][sutun])) {
-                    return false;
-                }
+            else if(ust==10){
+                System.out.print("  " + ust + " ");
             }
-        } else {
-            if (sutun + gemiBoyutu > tahtaBuyuklugu) {
-                return false;
+            else{
+                System.out.print("  " + ust + " ");
             }
-            for (int i = 0; i < gemiBoyutu; i++) {
-                if (!"0 ".equals(tahta[satir][sutun + i])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public void tahtayiYazdir(String[][] tahta) {//ortak tahta
-        for (int ust = 1; ust < tahtaBuyuklugu; ust++) {
-            System.out.print(" " + ust + " ");
         }
         System.out.println();
-        for (int satir = 1; satir < tahtaBuyuklugu; satir++) {
-            System.out.print(satir + " ");
-            for (int sutun = 1; sutun < tahtaBuyuklugu; sutun++) {
-                System.out.print(tahta[satir][sutun] + " ");
+        for (int satir = 0; satir < tahtaBuyuklugu; satir++) {
+            if(satir>8){
+                System.out.print((satir+1) + "  ");
             }
-            System.out.println();
-        }
-    }
-    public void bilgisayarTahtasiniYazdir(String[][] tahta) {
-        System.out.println("Bilgisayar Tahtası:");
-        for (int ust = 1; ust < tahtaBuyuklugu; ust++) {
-            System.out.print(" " + ust + " ");
-        }
-        System.out.println();
-        for (int satir = 1; satir < tahtaBuyuklugu; satir++) {
-            System.out.print(satir + " ");
-            for (int sutun = 1; sutun < tahtaBuyuklugu; sutun++) {
-                System.out.print(tahta[satir][sutun] + " ");
+            else{
+                System.out.print(" " +(satir+1) + "  ");
+            }
+            for (int sutun = 0; sutun < tahtaBuyuklugu; sutun++) {
+                System.out.print(tahta[satir][sutun] + "  ");
             }
             System.out.println();
         }
     }
 }
+
