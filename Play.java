@@ -1,5 +1,6 @@
 
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Play {
@@ -22,10 +23,10 @@ public class Play {
                     tahtaBuyuklugu = 8; // 8*8lik tahta
                     kuralDisiMi = false;
                 } else if (cevapSeviye.equalsIgnoreCase("orta")) {
-                    tahtaBuyuklugu = 10; // 10*10lik tahta
+                    tahtaBuyuklugu = 9; // 10*10lik tahta
                     kuralDisiMi = false;
                 } else if (cevapSeviye.equalsIgnoreCase("zor")) {
-                    tahtaBuyuklugu = 12; // 12*12 luk tahta
+                    tahtaBuyuklugu = 10; // 12*12 luk tahta
                     kuralDisiMi = false;
                 } else {
                     throw new IllegalArgumentException("Lütfen geçerli bir zorluk seviyesi giriniz: ");
@@ -71,41 +72,13 @@ public class Play {
                 tahta[i][j] = "0 ";
             }
         }
-
     }
 
-
-
-    /*private boolean kullaniciGemininKonumuDogruMu(boolean gemiYatayMi, int satir, int sutun, int gemiBoyutu, String[][] tahta) {
-        if (gemiYatayMi == false) {
-            if (satir + gemiBoyutu > tahtaBuyuklugu) {
-                return false;
-            }
-
-            for (int i = 0; i < gemiBoyutu; i++) {
-                if (!"0 ".equals(tahta[satir + i][sutun])) {
-                    return false;
-                }
-            }
-        } else {
-            if (sutun + gemiBoyutu > tahtaBuyuklugu) {
-                return false;
-            }
-            for (int i = 0; i < gemiBoyutu; i++) {
-                if (!"0 ".equals(tahta[satir][sutun + i])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }*/
-
     public static boolean gemininKonumuDogruMu(boolean gemiYatayMi, int satir, int sutun, int gemiBoyutu, String[][] tahta) {
-        if (gemiYatayMi == false) {
+        if (!gemiYatayMi) {
             if (satir + gemiBoyutu > tahtaBuyuklugu) {
                 return false;
             }
-
             for (int i = 0; i < gemiBoyutu; i++) {
                 if (!"0 ".equals(tahta[satir + i][sutun])) {
                     return false;
@@ -122,6 +95,45 @@ public class Play {
             }
         }
         return true;
+    }
+    public void yerlestir(boolean gemiYatayMi,int satir,int sutun,String[][] tahta,int gemiBoyutu){
+        if(!gemiYatayMi){
+            for (int yerlestir = satir; yerlestir < (satir + gemiBoyutu); yerlestir++) {
+
+                tahta[yerlestir][sutun] = gemiBoyutu + " ";
+                if (yerlestir + 1 < tahtaBuyuklugu && tahta[yerlestir + 1][sutun].equals("0 ")) {
+                    tahta[yerlestir + 1][sutun] = ". ";
+                }
+                if (sutun + 1 < tahtaBuyuklugu && tahta[yerlestir][sutun + 1].equals("0 ")) {
+                    tahta[yerlestir][sutun + 1] = ". ";
+                }
+                if (yerlestir > 0 && tahta[yerlestir - 1][sutun].equals("0 ")) {
+                    tahta[yerlestir - 1][sutun] = ". ";
+                }
+                if (sutun > 0 && tahta[yerlestir][sutun - 1].equals("0 ")) {
+                    tahta[yerlestir][sutun - 1] = ". ";
+                }
+            }
+        }
+        else{
+            for (int yerlestir = sutun; yerlestir < (sutun + gemiBoyutu); yerlestir++) {
+
+                tahta[satir][yerlestir] = gemiBoyutu + " ";
+
+                if (satir + 1 < tahtaBuyuklugu && tahta[satir + 1][yerlestir].equals("0 ")) {
+                    tahta[satir + 1][yerlestir] = ". ";
+                }
+                if (satir > 0 && tahta[satir - 1][yerlestir].equals("0 ")) {
+                    tahta[satir - 1][yerlestir] = ". ";
+                }
+                if (yerlestir + 1 < tahtaBuyuklugu && tahta[satir][yerlestir + 1].equals("0 ")) {
+                    tahta[satir][yerlestir + 1] = ". ";
+                }
+                if (yerlestir > 0 && tahta[satir][yerlestir - 1].equals("0 ")) {
+                    tahta[satir][yerlestir - 1] = ". ";
+                }
+            }
+        }
     }
 
     public static void tahtayiYazdir(String[][] tahta) {//ortak tahta
@@ -150,6 +162,7 @@ public class Play {
             }
             System.out.println();
         }
+        System.out.println(" ");
     }
 }
 
