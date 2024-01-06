@@ -1,192 +1,219 @@
 import java.util.*;
-import java.util.Random;
 
-public class Bilgisayar extends Play {
-    String[][] bilgisayarTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
+public class Oyuncu extends Play {
+    public String oyuncuAdi;
+    String[][] tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
     String[][] hamleTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
+    boolean kazandiMi = false;
+    int sayac = 0;
+    int vurus = 0;
+    int ilkVurulanSatir;
+    int ilkVurulanSutun;
+    int sbt;
+    int baslangic = 0;//cevreyi isaretlemek için
+    int bitis = 0;//cevreyi isaretlemek için
+    boolean gemiYatay = false;
+
+    Oyuncu(String ad) {
+        this.oyuncuAdi = ad;
+    }
 
     public void gemileriYerlestir() {
-        Random rndGemi = new Random();
-        for (int gemiBoyutu : Play.gemiBoyutlari) {
-            int randomSatir, randomSutun;
-            boolean gemiYatayMi;
-            do {
-                randomSatir = rndGemi.nextInt(Play.tahtaBuyuklugu);
-                randomSutun = rndGemi.nextInt(Play.tahtaBuyuklugu);
-                gemiYatayMi = rndGemi.nextBoolean();
-            } while (!Play.gemininKonumuDogruMu(gemiYatayMi, randomSatir, randomSutun, gemiBoyutu, bilgisayarTahta));
+        int satir, sutun;
+        boolean dongu;
+        for (int i = 4; i > 0; i--) {
+            int gemiBoyutu = gemiBoyutlari[i - 1];
+            switch (i) {
+                case 1:
+                    System.out.println("DENİZALTI (1 BİRİM,4 ADET) YERLEŞTİRİN:");
+                    break;
+                case 2:
+                    System.out.println("MAYINGEMİLERİ (2 BİRİM,3 ADET) YERLEŞTİRİN:");
+                    break;
+                case 3:
+                    System.out.println("KRUVAZÖRLERİ (3 BİRİM,2 ADET) YERLEŞTİRİN:");
+                    break;
+                case 4:
+                    System.out.println("AMİRAL GEMİSİNİ (4 BİRİM) YERLEŞTİRİN:");
+                    break;
+            }
+            for (int k = 1; k <= (5 - gemiBoyutu); k++) {//gemi sayısı
+                System.out.println("\n" + k + ". GEMİ\n");//kaçıncı gemi
+                do {
+                    try {
+                        System.out.println("Başlangıç koordinatlarını Girin:");
+                        System.out.println("Satır: ");
+                        satir = cvp.nextInt() - 1;
+                        System.out.println("Sütun: ");
+                        sutun = cvp.nextInt() - 1;
+                        char yon;
+                        //Girilen değerler tahta boyutu içerisinde mi?+
+                        if (satir >= tahtaBuyuklugu || sutun >= tahtaBuyuklugu) {
+                            throw new IllegalArgumentException("LÜTFEN GEÇERLİ BİR KOORDİNAT GİR!");
+                        } else if (gemiBoyutu == 1) {
+                            yon = 'd';
+                        } else {
+                            System.out.println("Gemi yönünü belirle:\n Yatay için 'Y'\n Dikey için 'D'");
+                            yon = cvp.next().toLowerCase().charAt(0);
+                        }
+                        switch (yon) {
+                            case 'd':
+                                if (!gemininKonumuDogruMu(false, satir, sutun, gemiBoyutu, tahta)) {
+                                    throw new IllegalArgumentException("Yeterli alan yok.Başka bir yön seç!");
+                                } else {
+                                    yerlestir(false, satir, sutun, tahta, gemiBoyutu);
+                                    Play.tahtayiYazdir(tahta);
+                                }
+                                break;
+                            case 'y':
+                                if (!gemininKonumuDogruMu(true, satir, sutun, gemiBoyutu, tahta)) {
+                                    throw new IllegalArgumentException("Yeterli alan yok.Başka bir nokta seç!");
+                                } else {
+                                    yerlestir(true, satir, sutun, tahta, gemiBoyutu);
+                                    Play.tahtayiYazdir(tahta);
+                                }
+                                break;
+                            default:
+                                throw new IllegalArgumentException("GEÇERLİ BİR HARF GİR!");
+                        }
+                        dongu = false;
 
-            for (int j = 0; j < gemiBoyutu; j++) {
-                if (gemiYatayMi)
-                    bilgisayarTahta[randomSatir][randomSutun + j] = Integer.toString(gemiBoyutu) + " ";
-                else
-                    bilgisayarTahta[randomSatir + j][randomSutun] = Integer.toString(gemiBoyutu) + " ";
-            }
-        }
-    }
-
-    //kullanıcının atışlarını kontrol eden fonksiyon
-    public static void AtisKontrolKullanici(String[][] bilgisayarTahta) {
-        Scanner input = new Scanner(System.in);
-        System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-        int hamleSatir = input.nextInt();
-        System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-        int hamleSutun = input.nextInt();
-        if (bilgisayarTahta[hamleSatir][hamleSutun] == "0 ") {
-            System.out.println("İsabetsiz atış yaptınız!");
-        } else if (bilgisayarTahta[hamleSatir][hamleSutun] == "1 ") {
-            System.out.println("Tebrikler,Başarılı atış!DENİZALTI BATIRILDI!");
-            System.out.println("Hamle sırası tekrar sizin.");
-            AtisKontrolKullanici(bilgisayarTahta);
-        } else if (bilgisayarTahta[hamleSatir][hamleSutun] == "2 ") {
-            System.out.println("Tebrikler,Başarılı atış!MAYIN GEMİSİ VURULDU");
-            System.out.println("Hamle sırası tekrar sizin.");
-            System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-            int hamleSatirMG = input.nextInt();
-            System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-            int hamleSutunMG = input.nextInt();
-            if (bilgisayarTahta[hamleSatirMG][hamleSutunMG] == "2 " && ((hamleSatirMG == hamleSatir - 1) || (hamleSatirMG == hamleSatir + 1) || (hamleSutunMG == hamleSutun - 1) || (hamleSutunMG == hamleSutun + 1))) {
-                System.out.println("Tebrikler,Başarılı atış!M>AYIN GEMİSİ BATIRILDI!");
-                AtisKontrolKullanici(bilgisayarTahta);
-            }
-        } else if (bilgisayarTahta[hamleSatir][hamleSutun] == "3 ") {
-            System.out.println("Tebrikler,Başarılı atış!KRUVAZÖR VURULDU");
-            System.out.println("Hamle sırası tekrar sizin.");
-            System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-            int hamleSatirK = input.nextInt();
-            System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-            int hamleSutunK = input.nextInt();
-            if (bilgisayarTahta[hamleSatirK][hamleSutunK] == "3 " && ((hamleSatirK == hamleSatir - 1) || (hamleSatirK == hamleSatir + 1) || (hamleSutunK == hamleSutun - 1) || (hamleSutunK == hamleSutun + 1))) {
-                System.out.println("Tebrikler.KRUVAZÖR TEKRAR VURULDU!BATIRMAYA ÇOK YAKINSIN!");
-                System.out.println("Hamle sırası tekrar sizin.");
-                System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-                int hamleSatirK1 = input.nextInt();
-                System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-                int hamleSutunK1 = input.nextInt();
-                if (bilgisayarTahta[hamleSatirK1][hamleSutunK1] == "3 " && ((hamleSatirK1 == hamleSatirK - 1) || (hamleSatirK1 == hamleSatirK + 1) || (hamleSutunK1 == hamleSutunK - 1) || (hamleSutunK1 == hamleSutunK + 1))) {
-                    System.out.println("Tebrikler.KRUVAZÖR BATIRILDI!");
-                    System.out.println("Hmale sırası tekrar sizin.");
-                    AtisKontrolKullanici(bilgisayarTahta);
-                }
-            }
-        } else if (bilgisayarTahta[hamleSatir][hamleSutun] == "4 ") {
-            System.out.println("Tebrikler,Başarılı atış!AMİRAL VURULDU");
-            System.out.println("Hamle sırası tekrar sizin.");
-            System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-            int hamleSatirA = input.nextInt();
-            System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-            int hamleSutunA = input.nextInt();
-            if (bilgisayarTahta[hamleSatirA][hamleSutunA] == "4 " && ((hamleSatirA == hamleSatir - 1) || (hamleSatirA == hamleSatir + 1) || (hamleSutunA == hamleSutun - 1) || (hamleSutunA == hamleSutun + 1))) {
-                System.out.println("Tebrikler.AMİRAL TEKRAR VURULDU!BATIRMAYA YAKINSIN!");
-                System.out.println("Hamle sırası tekrar sizin.");
-                System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-                int hamleSatirA1 = input.nextInt();
-                System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-                int hamleSutunA1 = input.nextInt();
-                if (bilgisayarTahta[hamleSatirA1][hamleSutunA1] == "4 " && ((hamleSatirA1 == hamleSatirA - 1) || (hamleSatirA1 == hamleSatirA + 1) || (hamleSutunA1 == hamleSutunA - 1) || (hamleSutunA1 == hamleSutunA + 1))) {
-                    System.out.println("Tebrikler.AMİRAL TEKRAR VURULDU!BATIRMAYA ÇOK YAKINSIN!");
-                    System.out.println("Hamle sırası tekrar sizin.");
-                    System.out.println("Atış yapmak istediğiniz birimin satır koordinatlarını giriniz.");
-                    int hamleSatirA2 = input.nextInt();
-                    System.out.println("Atış yapmak istediğiniz sütun koordinatlarını giriniz.");
-                    int hamleSutunA2 = input.nextInt();
-                    if (bilgisayarTahta[hamleSatirA2][hamleSutunA2] == "4 " && ((hamleSatirA2 == hamleSatirA1 - 1) || (hamleSatirA2 == hamleSatirA1 + 1) || (hamleSutunA2 == hamleSutunA1 - 1) || (hamleSutunA2 == hamleSutunA1 + 1))) {
-                        System.out.println("Tebrikler.AMİRAL BATIRILDI!");
-                        System.out.println("Hamle sırası tekrar sizin.");
-                        AtisKontrolKullanici(bilgisayarTahta);
+                    } catch (IllegalArgumentException e) {
+                        dongu = true;
+                        System.out.println(e.getMessage());
+                    } catch (InputMismatchException a) {
+                        System.out.println("Geçerli bir değer gir!");
+                        cvp.next();
+                        dongu = true;
                     }
                 }
+                while (dongu);
             }
         }
     }
 
-    //bilgisayarın atışlarını kontrol eden fonksiyon
-    public void AtisKontrolBilgisayar(String[][] kullanici1Tahta) {
-        Random random = new Random();
-        int hamleSatir = random.nextInt(0, Play.tahtaBuyuklugu);
-        int hamlesutun = random.nextInt(0, Play.tahtaBuyuklugu);
-        if (kullanici1Tahta[hamleSatir][hamlesutun] == "0 ") {
-            System.out.println("Bilgisayar isabetsiz atış yaptı.");
-        } else if (kullanici1Tahta[hamleSatir][hamlesutun] == "1 ") {
-            System.out.println("Bilgisayar isabetli atış yaptı.DENİAZLTINIZ BATIRILDI!");
-            AtisKontrolBilgisayar(kullanici1Tahta);
-        } else if (kullanici1Tahta[hamleSatir][hamlesutun] == "2 ") {
-            System.out.println("Bilgisayar isabetli atış yaptı.MAYIN GEMİNİZ VURULDU!");
-            BilgisayarHamleAlgoritmasi(hamleSatir, hamlesutun, kullanici1Tahta);
-        } else if (kullanici1Tahta[hamleSatir][hamlesutun] == "3 ") {
-            System.out.println("Bilgisayar isabetli atış yaptı.KRUVAZÖR VURULDU!");
-            BilgisayarHamleAlgoritmasi(hamleSatir, hamlesutun, kullanici1Tahta);
-        } else if (kullanici1Tahta[hamleSatir][hamlesutun] == "4 ") {
-            System.out.println("Bilgisayar isabetli atış yaptı.AMİRAL VURULDU!");
-            BilgisayarHamleAlgoritmasi(hamleSatir, hamlesutun, kullanici1Tahta);
+    public boolean vur(String[][] karsitahta) {
+
+        Scanner hamle = new Scanner(System.in);
+        System.out.println("Vurmak İstediğin Koordinatı Gir!");
+        int turn = 1;
+        while (turn == 1) {
+            try {
+                System.out.println("Satır:");
+                int satir = hamle.nextInt() - 1;
+                System.out.println("Sutun:");
+                int sutun = hamle.nextInt() - 1;
+                if (satir > tahtaBuyuklugu - 1 || sutun > tahtaBuyuklugu - 1) {
+                    throw new IllegalArgumentException("LÜTFEN GEÇERLİ BİR KOORDİNAT GİR!");
+                } else if (hamleTahta[satir][sutun].equals("X ") || hamleTahta[satir][sutun].equals(". ")) {
+                    throw new IllegalArgumentException("BU NOKTAYI ZATEN VURDUNUZ!");
+                }
+                switch (vurus) {
+                    case 0:
+                        if (!karsitahta[satir][sutun].equals("0 ")) {
+                            ilkVurulanSatir = satir;
+                            ilkVurulanSutun = sutun;
+                        }
+                        break;
+                    case 1:
+                        if (satir == ilkVurulanSatir && Math.abs(sutun - ilkVurulanSutun) == 1) {
+                            if (!karsitahta[satir][sutun].equals("0 ") || !karsitahta[satir][sutun].equals(". ")) {
+                                gemiYatay = true;
+                                sbt = satir;
+                                baslangic = Math.min(sutun, ilkVurulanSutun);
+                                bitis = Math.max(sutun, ilkVurulanSutun);
+                            }
+                        }
+                        else if (sutun == ilkVurulanSutun && Math.abs(satir - ilkVurulanSatir) == 1) {
+                            if (!karsitahta[satir][sutun].equals("0 ") || !karsitahta[satir][sutun].equals(". ")) {
+                                gemiYatay = false;
+                                sbt = sutun;
+                                baslangic = Math.min(satir, ilkVurulanSatir);
+                                bitis = Math.max(satir, ilkVurulanSatir);
+                            }
+                        } else {
+                            throw new IllegalArgumentException("ÖNCE VURULAN GEMİYİ BATIRMALISIN!\nİPUCU:Vurulan noktanın çevresine atış yap!");
+                        }
+                        break;
+                    default://vurus>1
+                        if (Math.abs((sutun - baslangic)) != 1 && Math.abs((sutun - bitis)) != 1) {
+                            throw new IllegalArgumentException("ÖNCE VURULAN GEMİYİ BATIRMALISIN!\nİPUCU:Vurulan noktanın çevresine atış yap!");
+                        }
+                        else if(!karsitahta[satir][sutun].equals("0 ") || !karsitahta[satir][sutun].equals(". ")){
+                            if(gemiYatay){
+                                baslangic = Math.min(sutun, ilkVurulanSutun);
+                                bitis = Math.max(sutun, ilkVurulanSutun);
+                        }else{
+                                baslangic = Math.min(satir, ilkVurulanSatir);
+                                bitis = Math.max(satir, ilkVurulanSatir);
+                            }
+                        }
+                }if(karsitahta[satir][sutun].trim()==String.valueOf(vurus)){
+                    vurus=0;
+                    System.out.println("GEMİ BATIRILDI!!");
+                    cevreIsaret(baslangic,bitis,sbt,karsitahta,gemiYatay);
+                }
+
+                if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
+                    System.out.println("BAŞARILI ATIŞ!!");
+                    System.out.println("Geminin"+vurus+". birimi vuruldu.");
+                    sayac++;
+                    karsitahta[satir][sutun] = "X ";
+                    hamleTahta[satir][sutun] = "X ";
+                    tahtayiYazdir(hamleTahta);
+                    if (sayac == 14) {
+                        System.out.println("Oyun Bitti ");
+                        kazandiMi = true;
+                        turn = 0;
+                    } else {
+                        System.out.println("SIRA TEKRAR SENDE.");
+                    }
+                } else {
+                    System.out.println("BAŞARISIZ ATIŞ!");
+                    hamleTahta[satir][sutun] = ". ";
+                    tahtayiYazdir(hamleTahta);
+                    turn = 0;
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return kazandiMi;
+    }
+
+    public void cevreIsaret(int bas, int bit, int sbt, String[][] karsiTahta, boolean gemiYatay) {
+        if (gemiYatay) {
+            for (int cevre = bas; cevre <= bit; cevre++) {
+                if (sbt + 1 < tahtaBuyuklugu - 1 && karsiTahta[sbt + 1][cevre].equals(". ")) {
+                    hamleTahta[sbt + 1][cevre] = ". ";
+                }
+                if (sbt > 0 && karsiTahta[sbt - 1][cevre].equals(". ")) {
+                    hamleTahta[sbt - 1][cevre] = ". ";
+                }
+                if (cevre + 1 < tahtaBuyuklugu - 1 && karsiTahta[sbt][cevre + 1].equals(". ")) {
+                    hamleTahta[sbt][cevre + 1] = ". ";
+                }
+                if (cevre > 0 && karsiTahta[sbt][cevre - 1].equals(". ")) {
+                    hamleTahta[sbt][cevre - 1] = ". ";
+                }
+                //if bloğu içinde çünkü oyun alanı dışı olup olmadığını bilmiyoruz.
+            }
+        } else {
+            for (int cevre = bas; cevre <= bit; cevre++) {
+                if (cevre + 1 < tahtaBuyuklugu - 1 && karsiTahta[cevre + 1][sbt].equals(". ")) {
+                    hamleTahta[cevre + 1][sbt] = ". ";
+                }
+                if (cevre > 0 && karsiTahta[cevre - 1][sbt].equals(". ")) {
+                    hamleTahta[cevre - 1][sbt] = ". ";
+                }
+                if (sbt + 1 < tahtaBuyuklugu - 1 && karsiTahta[cevre][sbt + 1].equals(". ")) {
+                    hamleTahta[cevre][sbt + 1] = ". ";
+                }
+                if (sbt > 0 && karsiTahta[cevre][sbt - 1].equals(". ")) {
+                    hamleTahta[cevre][sbt - 1] = ". ";
+                }
+
+            }
         }
     }
-
-    //başarılı atış sonrası,bilgisayara tekrar yapılacak atış sırasında algoritma kazandıran fonksiyon
-    public void BilgisayarHamleAlgoritmasi(int hamleSatir, int hamleSutun, String[][] kullanici1Tahta) {
-        Random random = new Random();
-        int hamleYonu = random.nextInt(1, 5);
-        int vurulanBirim = 0;
-        if (hamleYonu == 1) {
-            while (kullanici1Tahta[hamleSatir][hamleSutun] != "0 ") {
-                hamleSutun++;
-                vurulanBirim++;
-            }
-            BilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim);
-        } else if (hamleYonu == 2) {
-            while (kullanici1Tahta[hamleSatir][hamleSutun] != "0 ") {
-                hamleSatir--;
-                vurulanBirim++;
-            }
-            BilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim);
-        } else if (hamleYonu == 3) {
-            while (kullanici1Tahta[hamleSatir][hamleSutun] != "0 ") {
-                hamleSutun--;
-                vurulanBirim++;
-            }
-            BilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim);
-        } else if (hamleYonu == 4) {
-            while (kullanici1Tahta[hamleSatir][hamleSutun] != "0 ") {
-                hamleSatir++;
-                vurulanBirim++;
-            }
-            BilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim);
-        }
-    }
-
-    //Bilgisayardan random alınan yön sonrası bilgisayarın hamle sonucunu veren fonksiyon
-    public void BilgisayarHamleSonucu(int hamleSatir, int hamleSutun, String[][] kullanici1Tahta, int vurulanBirim) {
-        if (vurulanBirim == 1) {
-            System.out.println("Bilgisayarın 2. atışı başarısızlıkla sonuçlandı.");
-        } else if (vurulanBirim == 2 && kullanici1Tahta[hamleSatir][hamleSutun] == "2 ") {
-            System.out.println("Bilgisayar isabetli atış yaptı.MAYIN GEMİNİZ BATIRILDI!");
-            System.out.println("Hamle sırası tekrar bilgisayarın.");
-            AtisKontrolBilgisayar(kullanici1Tahta);
-        } else if (vurulanBirim == 2 && kullanici1Tahta[hamleSatir][hamleSutun] == "3 ") {
-            System.out.println("Bilgisayar KRUVAZÖR'ÜN 2 birimini vurdu!");
-            System.out.println("3. atış başarısızlıkla sonuçlandı.");
-        } else if (vurulanBirim == 2 && kullanici1Tahta[hamleSatir][hamleSutun] == "4 ") {
-            System.out.println("Bilgisayar AMİRAL'İN 2 birimini vurdu!");
-            System.out.println("3. atış başarısızlıkla sonuçlandı.");
-        } else if (vurulanBirim == 3 && kullanici1Tahta[hamleSatir][hamleSutun] == "3 ") {
-            System.out.println("Bilgisayar 2 isabetli atış yaptı.KRUVAZÖR BATIRILDI!");
-            System.out.println("Hamle sırası tekrar bilgisayarın.");
-            AtisKontrolBilgisayar(kullanici1Tahta);
-        } else if (vurulanBirim == 3 && kullanici1Tahta[hamleSatir][hamleSutun] == "4 ") {
-            System.out.println("Bilgisayar AMİRAL'İN 3 birimini vurdu!");
-            System.out.println("4. atış başarısızlıkla sonuçlandı.");
-            BasarisizBilgisayarHamle(hamleSatir, hamleSutun);
-        } else if (vurulanBirim == 4 && kullanici1Tahta[hamleSatir][hamleSutun] == "4 ") {
-            System.out.println("Bilgisayar 3 isabetli atış yaptı.AMİRAL BATIRILDI!");
-            System.out.println("Hamle sırası tekrar bilgisayarın.");
-            AtisKontrolBilgisayar(kullanici1Tahta);
-        }
-    }
-
-
-    public void BasarisizBilgisayarHamle(int hamleSatir, int hamleSutun) {
-        AtisKontrolKullanici(bilgisayarTahta);
-
-    }
-
 }
