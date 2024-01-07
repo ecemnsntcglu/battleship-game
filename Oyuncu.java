@@ -110,15 +110,18 @@ public class Oyuncu extends Play {
                 }
                 switch (vurus) {
                     case 0:
-                        if (!karsitahta[satir][sutun].equals("0 ")) {
+                        if (!karsitahta[satir][sutun].equals("0 ")&& !karsitahta[satir][sutun].equals(". ")) {
                             ilkVurulanSatir = satir;
+                            baslangic=ilkVurulanSatir;
+                            bitis=ilkVurulanSatir;
+                            sbt=sutun;
                             ilkVurulanSutun = sutun;
                             vurus++;
                         }
                         break;
                     case 1:
                         if (satir == ilkVurulanSatir && Math.abs(sutun - ilkVurulanSutun) == 1) {
-                            if (!karsitahta[satir][sutun].equals("0 ") || !karsitahta[satir][sutun].equals(". ")) {
+                            if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                                 gemiYatay = true;
                                 sbt = satir;
                                 baslangic = Math.min(sutun, ilkVurulanSutun);
@@ -127,7 +130,7 @@ public class Oyuncu extends Play {
                             }
                         }
                         else if (sutun == ilkVurulanSutun && Math.abs(satir - ilkVurulanSatir) == 1) {
-                            if (!karsitahta[satir][sutun].equals("0 ") || !karsitahta[satir][sutun].equals(". ")) {
+                            if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                                 gemiYatay = false;
                                 sbt = sutun;
                                 baslangic = Math.min(satir, ilkVurulanSatir);
@@ -139,10 +142,13 @@ public class Oyuncu extends Play {
                         }
                         break;
                     default://vurus>1
-                        if (Math.abs((sutun - baslangic)) != 1 && Math.abs((sutun - bitis)) != 1) {
+                        if (gemiYatay&&Math.abs((sutun - baslangic)) != 1 && Math.abs((sutun - bitis)) != 1) {
                             throw new IllegalArgumentException("ÖNCE VURULAN GEMİYİ BATIRMALISIN!\nİPUCU:Vurulan noktanın çevresine atış yap!");
                         }
-                        else if(!karsitahta[satir][sutun].equals("0 ") || !karsitahta[satir][sutun].equals(". ")){
+                        else if (!gemiYatay&&Math.abs((satir - baslangic)) != 1 && Math.abs((satir - bitis)) != 1) {
+                            throw new IllegalArgumentException("ÖNCE VURULAN GEMİYİ BATIRMALISIN!\nİPUCU:Vurulan noktanın çevresine atış yap!");
+
+                        } else if(!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")){
                             vurus++;
                             if(gemiYatay){
                                 baslangic = Math.min(sutun, ilkVurulanSutun);
@@ -155,15 +161,15 @@ public class Oyuncu extends Play {
                 }
                 if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                     System.out.println("BAŞARILI ATIŞ!!");
-                    System.out.println("Geminin"+vurus+". birimi vuruldu.");
+                    System.out.println("Geminin "+vurus+". birimi vuruldu.");
                     sayac++;
-                    karsitahta[satir][sutun] = "X ";
                     hamleTahta[satir][sutun] = "X ";
-                    if(karsitahta[satir][sutun].trim()==String.valueOf(vurus)){
+                    if(karsitahta[satir][sutun].equals(vurus +" ")){
                         vurus=0;
                         System.out.println("GEMİ BATIRILDI!!");
                         cevreIsaret(baslangic,bitis,sbt,karsitahta,gemiYatay);
                     }
+                    karsitahta[satir][sutun] = "X ";
                     tahtayiYazdir(hamleTahta);
                     if (sayac == 14) {
                         System.out.println("Oyun Bitti ");
