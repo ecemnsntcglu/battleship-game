@@ -1,34 +1,38 @@
 import java.util.Scanner;
 
 public class Main {
-    public Main() {
-    }
-
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Play play = new Play();
         int hamleSayisi = 20;
         play.oyunaGiris();
         if (Play.kimleOynaniyor() == 1) {
-            System.out.println("Bilgisayarla oynayacaksınız.");
             Bilgisayar bilgisayar = new Bilgisayar();
-            Play.tahtayiDoldur(Bilgisayar.bilgisayarTahta);
-            bilgisayar.gemileriYerlestir();
+            System.out.println("Bilgisayarla oynayacaksınız.");
             Play.tahtayiDoldur(Bilgisayar.oyuncu.tahta);
             Play.tahtayiYazdir(Bilgisayar.oyuncu.tahta);
-            Bilgisayar.oyuncu.gemileriYerlestir();
-
-            for(int i = 0; i < 50; ++i) {
-                System.out.println("\n\n\n\n");
+            System.out.println("Gemileri rasgele yerleştirmek için 'R' yi kendin yerleştirmek için 'k' yi tuşla...");
+            char kim = input.next().toLowerCase().charAt(0);
+            if (kim == 'r') {
+                play.gemileriYerlestirB(Bilgisayar.oyuncu.tahta);
+                Play.tahtayiYazdir(Bilgisayar.oyuncu.tahta);
+            } else {
+                Bilgisayar.oyuncu.gemileriYerlestir();
             }
-
+            Play.tahtayiDoldur(Bilgisayar.bilgisayarTahta);
+            bilgisayar.gemileriYerlestirB(Bilgisayar.bilgisayarTahta);
+            System.out.println("bilgisayar gemileri yerleştirildi");
+            for (int i = 0; i < 50; ++i) {
+                System.out.println("\n\n\n");
+            }
+            Play.tahtayiYazdir(Bilgisayar.oyuncu.tahta);
             System.out.println("----------OYUN BAŞLADI!!----------");
             Play.tahtayiDoldur(Bilgisayar.oyuncu.hamleTahta);
             Play.tahtayiDoldur(Bilgisayar.hamleTahta);
 
-            while(hamleSayisi > 0) {
+            while (hamleSayisi > 0) {
                 System.out.println(Bilgisayar.oyuncu.oyuncuAdi + " sırası:\n");
-                System.out.println("HAMLE SAYISI: "+hamleSayisi);
+                System.out.println("HAMLE SAYISI: " + hamleSayisi);
                 Play.tahtayiYazdir(Bilgisayar.oyuncu.hamleTahta);
                 if (!Bilgisayar.oyuncu.vur(Bilgisayar.bilgisayarTahta)) {
                     System.out.println("Bilgisayarın sırası:\n");
@@ -62,21 +66,35 @@ public class Main {
             Oyuncu oyuncu1 = new Oyuncu(ad);
             Play.tahtayiDoldur(oyuncu1.tahta);
             Play.tahtayiYazdir(oyuncu1.tahta);
-            oyuncu1.gemileriYerlestir();
-            System.out.println("Sıra arkadaşınızda!!");
-
-            for(int i = 0; i < 50; ++i) {
-                System.out.println("\n\n\n\n");
+            System.out.println("Gemileri rasgele yerleşyirmek için 'R' yi kendin yerleştirmek için 'K' yi tuşla...");
+            char kim = input.next().toLowerCase().charAt(0);
+            if (kim == 'r') {
+                play.gemileriYerlestirB(oyuncu1.tahta);
+                Play.tahtayiYazdir(oyuncu1.tahta);
+            }
+            else{
+                oyuncu1.gemileriYerlestir();
             }
 
+            System.out.println("\nSıra arkadaşınızda,herhangi bir tuşa bas!!");
+            input.next();
+            for (int i = 0; i < 50; ++i) {
+                System.out.println("\n\n\n");
+            }
             System.out.println("2. Oyuncu NICKNAME: ");
             ad = input.next();
             Oyuncu oyuncu2 = new Oyuncu(ad);
             Play.tahtayiDoldur(oyuncu2.tahta);
             Play.tahtayiYazdir(oyuncu2.tahta);
-            oyuncu2.gemileriYerlestir();
-
-            for(int i = 0; i < 50; ++i) {
+            System.out.println("Gemileri rasgele yerleşyirmek için 'R' yi kendin yerleştirmek için 'K' yi tuşla...");
+            kim = input.next().toLowerCase().charAt(0);
+            if (kim == 'r') {
+                play.gemileriYerlestirB(oyuncu2.tahta);
+                Play.tahtayiYazdir(oyuncu2.tahta);
+            }else{
+                oyuncu2.gemileriYerlestir();
+            }
+            for (int i = 0; i < 50; ++i) {
                 System.out.println("\n\n\n\n");
             }
 
@@ -84,10 +102,10 @@ public class Main {
             Play.tahtayiDoldur(oyuncu1.hamleTahta);
             Play.tahtayiDoldur(oyuncu2.hamleTahta);
 
-            while(hamleSayisi > 0) {
-                System.out.println(oyuncu2.oyuncuAdi + "adlı oyuncu sırası:\n");
+            while (hamleSayisi > 0) {
+                System.out.println(oyuncu1.oyuncuAdi + " adlı oyuncu sırası:\n");
                 if (!oyuncu1.vur(oyuncu2.tahta)) {
-                    System.out.println(oyuncu2.oyuncuAdi + "adlı oyuncu sırası:\n");
+                    System.out.println(oyuncu2.oyuncuAdi + " adlı oyuncu sırası:\n");
                     if (!oyuncu2.vur(oyuncu1.tahta)) {
                         System.out.println(oyuncu1.oyuncuAdi + ": " + oyuncu1.sayac);
                         System.out.println(oyuncu2.oyuncuAdi + ": " + oyuncu2.sayac);
