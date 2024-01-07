@@ -90,8 +90,6 @@ public class Bilgisayar extends Play {
                             System.out.println("Bilgisayarın " + (vurulanBirim+1) + ". hamlesi başarısız ");
                             hamleTahta[ilksatir][sutun] = ". ";
                             hamleBittiMi= 0;
-
-
                         }
                     }
                     hamleYonu++;
@@ -111,16 +109,14 @@ public class Bilgisayar extends Play {
                             if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurulanBirim) + " ")) {
                                 System.out.println("Gemi batırıldı.");
                                 cevreIsaret(baslangic, bitis, ilksatir, karsitahta, gemiYatay);
-                                vurulanBirim= 1;
+                                vurulanBirim= 0;
                                 hamleYonu = 1;
                                 break;
                             }
                         } else {
                             System.out.println("Bilgisayarın " + (vurulanBirim+1) + ". hamlesi başarısız ");
                             hamleTahta[ilksatir][sutun] = ". ";
-
                             hamleBittiMi= 0;
-
                         }
                     }
                     hamleYonu++;
@@ -187,7 +183,7 @@ public class Bilgisayar extends Play {
         int cevre;
         if (gemiYatay) {
             for (cevre = bas; cevre <= bit; ++cevre) {
-                if (sbt + 1 < tahtaBuyuklugu - 1 && karsiTahta[sbt + 1][cevre].equals(". ")) {
+                if (sbt + 1 < tahtaBuyuklugu && karsiTahta[sbt + 1][cevre].equals(". ")) {
                     hamleTahta[sbt + 1][cevre] = ". ";
                 }
 
@@ -195,7 +191,7 @@ public class Bilgisayar extends Play {
                     hamleTahta[sbt - 1][cevre] = ". ";
                 }
 
-                if (cevre + 1 < tahtaBuyuklugu - 1 && karsiTahta[sbt][cevre + 1].equals(". ")) {
+                if (cevre + 1 < tahtaBuyuklugu  && karsiTahta[sbt][cevre + 1].equals(". ")) {
                     hamleTahta[sbt][cevre + 1] = ". ";
                 }
 
@@ -205,7 +201,7 @@ public class Bilgisayar extends Play {
             }
         } else {
             for (cevre = bas; cevre <= bit; ++cevre) {
-                if (cevre + 1 < tahtaBuyuklugu - 1 && karsiTahta[cevre + 1][sbt] == ". ") {
+                if (cevre + 1 < tahtaBuyuklugu && karsiTahta[cevre + 1][sbt] == ". ") {
                     hamleTahta[cevre + 1][sbt] = ". ";
                 }
 
@@ -213,7 +209,7 @@ public class Bilgisayar extends Play {
                     hamleTahta[cevre - 1][sbt] = ". ";
                 }
 
-                if (sbt + 1 < tahtaBuyuklugu - 1 && karsiTahta[cevre][sbt + 1] == ". ") {
+                if (sbt + 1 < tahtaBuyuklugu && karsiTahta[cevre][sbt + 1] == ". ") {
                     hamleTahta[cevre][sbt + 1] = ". ";
                 }
 
@@ -222,7 +218,5 @@ public class Bilgisayar extends Play {
                 }
             }
         }
-
     }
-
 }
