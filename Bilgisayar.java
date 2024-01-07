@@ -9,35 +9,10 @@ public class Bilgisayar extends Play {
 
     public Bilgisayar() {
     }
-
-    public void gemileriYerlestir() {
-        Random rndGemi = new Random();
-        int[] gemiBoyutlari1 = Play.gemiBoyutlari;
-        int uzunluk = gemiBoyutlari1.length;
-
-        for (int gemiBoyutu : gemiBoyutlari1) {
-            for (int k = 1; k <= (5 - gemiBoyutu); k++) {
-
-                int randomSatir;
-                int randomSutun;
-                boolean gemiYatayMi;
-                do {
-                    randomSatir = rndGemi.nextInt(Play.tahtaBuyuklugu);
-                    randomSutun = rndGemi.nextInt(Play.tahtaBuyuklugu);
-                    gemiYatayMi = rndGemi.nextBoolean();
-                } while (!Play.gemininKonumuDogruMu(gemiYatayMi, randomSatir, randomSutun, gemiBoyutu, bilgisayarTahta));
-
-                yerlestir(gemiYatayMi, randomSatir, randomSutun, bilgisayarTahta, gemiBoyutu);
-            }
-
-        }
-
-    }
-
     public static boolean atisKontrolBilgisayar(String[][] kullanici1Tahta) {
         Random random = new Random();
-        int hamleSatir = random.nextInt(0, Play.tahtaBuyuklugu);
-        int hamleSutun = random.nextInt(0, Play.tahtaBuyuklugu);
+        int hamleSatir = random.nextInt( Play.tahtaBuyuklugu);
+        int hamleSutun = random.nextInt( Play.tahtaBuyuklugu);
         if (!hamleTahta[hamleSatir][hamleSutun].equals("X ") && !hamleTahta[hamleSatir][hamleSutun].equals(". ")) {
             switch (kullanici1Tahta[hamleSatir][hamleSutun]) {
                 case "0 ":
