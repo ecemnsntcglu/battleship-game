@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Oyuncu extends Play {
     public String oyuncuAdi;
+    int hamlesayac=20;
     String[][] tahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
     String[][] hamleTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
     boolean kazandiMi = false;
@@ -13,7 +14,7 @@ public class Oyuncu extends Play {
     int baslangic = 0;//cevreyi isaretlemek için
     int bitis = 0;//cevreyi isaretlemek için
     boolean gemiYatay = false;
-    int hamleSayac=20;
+
     Oyuncu(String ad) {
         this.oyuncuAdi = ad;
     }
@@ -93,7 +94,7 @@ public class Oyuncu extends Play {
     }
 
     public boolean vur(String[][] karsitahta) {
-        hamleSayac--;
+        hamlesayac--;
         Scanner hamle = new Scanner(System.in);
         System.out.println("Vurmak İstediğin Koordinatı Gir!");
         int turn = 1;
@@ -110,12 +111,12 @@ public class Oyuncu extends Play {
                 }
                 switch (vurus) {
                     case 0:
-                        if (!karsitahta[satir][sutun].equals("0 ")&& !karsitahta[satir][sutun].equals(". ")) {
-                            ilkVurulanSutun = sutun;
+                        if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                             ilkVurulanSatir = satir;
-                            baslangic=ilkVurulanSatir;
-                            bitis=ilkVurulanSatir;
-                            sbt=sutun;
+                            ilkVurulanSutun = sutun;
+                            baslangic = ilkVurulanSatir;
+                            bitis = ilkVurulanSatir;
+                            sbt = sutun;
                             vurus++;
                         }
                         break;
@@ -128,8 +129,7 @@ public class Oyuncu extends Play {
                                 bitis = Math.max(sutun, ilkVurulanSutun);
                                 vurus++;
                             }
-                        }
-                        else if (sutun == ilkVurulanSutun && Math.abs(satir - ilkVurulanSatir) == 1) {
+                        } else if (sutun == ilkVurulanSutun && Math.abs(satir - ilkVurulanSatir) == 1) {
                             if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                                 gemiYatay = false;
                                 sbt = sutun;
@@ -142,32 +142,31 @@ public class Oyuncu extends Play {
                         }
                         break;
                     default://vurus>1
-                        if (gemiYatay&&Math.abs((sutun - baslangic)) != 1 && Math.abs((sutun - bitis)) != 1) {
+                        if (gemiYatay && Math.abs((sutun - baslangic)) != 1 && Math.abs((sutun - bitis)) != 1) {
                             throw new IllegalArgumentException("ÖNCE VURULAN GEMİYİ BATIRMALISIN!\nİPUCU:Vurulan noktanın çevresine atış yap!");
-                        }
-                        else if (!gemiYatay&&Math.abs((satir - baslangic)) != 1 && Math.abs((satir - bitis)) != 1) {
+                        } else if (!gemiYatay && Math.abs((satir - baslangic)) != 1 && Math.abs((satir - bitis)) != 1) {
                             throw new IllegalArgumentException("ÖNCE VURULAN GEMİYİ BATIRMALISIN!\nİPUCU:Vurulan noktanın çevresine atış yap!");
 
-                        } else if(!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")){
+                        } else if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                             vurus++;
-                            if(gemiYatay){
+                            if (gemiYatay) {
                                 baslangic = Math.min(sutun, baslangic);
                                 bitis = Math.max(sutun, bitis);
-                            }else{
+                            } else {
                                 baslangic = Math.min(satir, baslangic);
-                                bitis = Math.max(satir,bitis);
+                                bitis = Math.max(satir, bitis);
                             }
                         }
                 }
                 if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                     System.out.println("BAŞARILI ATIŞ!!");
-                    System.out.println("Geminin "+vurus+". birimi vuruldu.");
+                    System.out.println("Geminin " + vurus + ". birimi vuruldu.");
                     sayac++;
                     hamleTahta[satir][sutun] = "X ";
-                    if(karsitahta[satir][sutun].equals(vurus +" ")){
-                        vurus=0;
+                    if (karsitahta[satir][sutun].equals(vurus + " ")) {
+                        vurus = 0;
                         System.out.println("GEMİ BATIRILDI!!");
-                        cevreIsaret(baslangic,bitis,sbt,karsitahta,gemiYatay);
+                        cevreIsaret(baslangic, bitis, sbt, karsitahta, gemiYatay);
                     }
                     karsitahta[satir][sutun] = "X ";
                     tahtayiYazdir(hamleTahta);
