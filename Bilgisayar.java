@@ -5,62 +5,58 @@ public class Bilgisayar extends Play {
     static int sayac = 0;
     int baslangic, bitis, ilkVurulanSatir, ilkVurulanSutun, sbt;
     boolean gemiYatay;
-    int vurus = 0;
+    int vurulanBirim = 0;
     static boolean kazandiMi = false;
     static String[][] hamleTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
     static String[][] bilgisayarTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
-    int yeniHamleYonu = 1;
-
+    int hamleYonu = 1;
     public Bilgisayar() {
     }
-
     public boolean atisKontrolBilgisayar(String[][] karsitahta) {
         Random random = new Random();
         int satir, sutun;
-        int turn = 1;
-        while (turn == 1 && sayac < 14) {
+        int hamleBittiMi = 1;
+        while (hamleBittiMi == 1 && sayac < 14) {
             try {
-                //vurus>1
-                if (vurus == 0) {
+                if (vurulanBirim == 0) {
                     satir = random.nextInt(Play.tahtaBuyuklugu);
                     sutun = random.nextInt(Play.tahtaBuyuklugu);
                     if (hamleTahta[satir][sutun].equals("X ") || hamleTahta[satir][sutun].equals(". ")) {
                         throw new IllegalArgumentException(" ");
-                    } else if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
+                    }
+                    else if (!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")) {
                         System.out.println("Bilgisayar başarılı atış yaptı.");
                         hamleTahta[satir][sutun]="X ";
                         sayac++;
-                        vurus++;
+                        vurulanBirim++;
                         ilkVurulanSatir = satir;
                         ilkVurulanSutun = sutun;
-                        int i=vurus;
-                        if (karsitahta[satir][sutun].equals(String.valueOf(i) + " ")) {
+                        if (karsitahta[satir][sutun].equals(String.valueOf(vurulanBirim) + " ")) {
                             System.out.println("Gemi batırıldı.");
                             cevreIsaret(ilkVurulanSatir, ilkVurulanSatir, sutun, karsitahta, gemiYatay);
-                            vurus = 0;
+                            vurulanBirim = 0;
                         } else {
-                            turn=bilgisayarHamleAlgoritmasi(ilkVurulanSatir, ilkVurulanSutun, karsitahta, turn);
+                            hamleBittiMi =bilgisayarHamleAlgoritmasi(ilkVurulanSatir, ilkVurulanSutun, karsitahta, hamleBittiMi);
                         }
-                    } else {
+                    }
+                    else {
                         System.out.println("Bilgisayar başarısız atış yaptı.");
-                        turn = 0;
+                        hamleBittiMi = 0;
                         hamleTahta[satir][sutun] = ". ";
                         break;
                     }
                 }
                 else {
-                    turn=bilgisayarHamleAlgoritmasi(ilkVurulanSatir, ilkVurulanSutun, karsitahta, turn);
+                    hamleBittiMi=bilgisayarHamleAlgoritmasi(ilkVurulanSatir, ilkVurulanSutun, karsitahta, hamleBittiMi);
                 }
-
                 if (sayac == 14) {
                     System.out.println("Oyun Bitti ");
                     kazandiMi = true;
                     break;
                 }
-
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                turn = 1;
+                hamleBittiMi = 1;
             }
         }
         return kazandiMi;
@@ -70,8 +66,8 @@ public class Bilgisayar extends Play {
     public int bilgisayarHamleAlgoritmasi(int ilksatir, int ilksutun, String[][] karsitahta, int turn) {
         int satir, sutun;
         try {
-            switch (yeniHamleYonu) {
-                case 1:
+            switch (hamleYonu) {
+                case 1: //sağ
                     sutun = ilksutun + 1;
                     while (sutun < Play.tahtaBuyuklugu && !hamleTahta[ilksatir][sutun].equals(". ")) {
                         if (karsitahta[ilksatir][sutun] != ". " && karsitahta[ilksatir][sutun] != "0 ") {
@@ -81,27 +77,27 @@ public class Bilgisayar extends Play {
                             baslangic = ilksutun;
                             sutun++;
                             sayac++;
-                            vurus++;
-                            System.out.println("Geminin"+vurus+". birimi vuruldu.");
-                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurus) + " ")) {
+                            vurulanBirim++;
+                            System.out.println("Geminin"+vurulanBirim+". birimi vuruldu.");
+                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurulanBirim) + " ")) {
                                 System.out.println("Gemi batırıldı.");
-                                yeniHamleYonu = 1;
+                                hamleYonu = 1;
                                 turn=1;
                                 cevreIsaret(baslangic, bitis, ilksatir, karsitahta, gemiYatay);
-                                vurus = 0;
+                                vurulanBirim= 0;
                                 break;
                             }
                         } else {
-                            System.out.println("Bilgisayarın"+vurus+". hamlesi başarısız ");
+                            System.out.println("Bilgisayarın"+vurulanBirim+". hamlesi başarısız ");
                             hamleTahta[ilksatir][sutun] = ". ";
                             turn = 0;
 
 
                         }
                     }
-                    yeniHamleYonu++;
+                    hamleYonu++;
                     break;
-                case 2:
+                case 2: //sol
                     sutun = ilksutun - 1;
                     while (0 <= sutun && !hamleTahta[ilksatir][sutun].equals(". ")) {
                         if (karsitahta[ilksatir][sutun] != ". " && karsitahta[ilksatir][sutun] != "0 ") {
@@ -111,26 +107,26 @@ public class Bilgisayar extends Play {
                             bitis = ilksutun;
                             --sutun;
                             ++sayac;
-                            vurus++;
-                            System.out.println("Geminin"+vurus+". birimi vuruldu.");
-                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurus) + " ")) {
+                            vurulanBirim++;
+                            System.out.println("Geminin"+vurulanBirim+". birimi vuruldu.");
+                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurulanBirim) + " ")) {
                                 System.out.println("Gemi batırıldı.");
                                 cevreIsaret(baslangic, bitis, ilksatir, karsitahta, gemiYatay);
-                                vurus = 1;
-                                yeniHamleYonu = 1;
+                                vurulanBirim= 1;
+                                hamleYonu = 1;
                                 break;
                             }
                         } else {
-                            System.out.println("Bilgisayarın"+vurus+". hamlesi başarısız ");
+                            System.out.println("Bilgisayarın"+vurulanBirim+". hamlesi başarısız ");
                             hamleTahta[ilksatir][sutun] = ". ";
 
                             turn = 0;
 
                         }
                     }
-                    yeniHamleYonu++;
+                    hamleYonu++;
                     break;
-                case 3:
+                case 3: //aşşağı
                     satir = ilksatir + 1;
                     while (satir < Play.tahtaBuyuklugu && !hamleTahta[satir][ilksutun].equals(". ")) {
                         if (karsitahta[satir][ilksutun] != ". " && karsitahta[satir][ilksutun] != "0 ") {
@@ -140,25 +136,24 @@ public class Bilgisayar extends Play {
                             baslangic = ilksatir;
                             ++satir;
                             ++sayac;
-                            vurus++;
-                            System.out.println("Geminin"+vurus+". birimi vuruldu.");
-                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurus) + " ")) {
+                            vurulanBirim++;
+                            System.out.println("Geminin"+vurulanBirim+". birimi vuruldu.");
+                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurulanBirim) + " ")) {
                                 System.out.println("Gemi batırıldı.");
-                                yeniHamleYonu = 1;
+                                hamleYonu = 1;
                                 cevreIsaret(baslangic, bitis, ilksutun, karsitahta, gemiYatay);
-                                vurus = 0;
-                                turn = 1;
+                                vurulanBirim = 0;
+                                turn = 0;
                             }
                         } else {
-                            System.out.println("Bilgisayarın"+vurus+". hamlesi başarısız ");
+                            System.out.println("Bilgisayarın"+vurulanBirim+". hamlesi başarısız ");
                             hamleTahta[satir][ilksutun] = ". ";
-
                             turn = 0;
                         }
                     }
-                    yeniHamleYonu++;
+                    hamleYonu++;
                     break;
-                case 4:
+                case 4: //yukarı
                     satir = ilksatir - 1;
                     while (satir >= 0 && !hamleTahta[satir][ilksutun].equals(". ")) {
                         if (karsitahta[satir][ilksutun] != ". " && karsitahta[satir][ilksutun] != "0 ") {
@@ -168,25 +163,24 @@ public class Bilgisayar extends Play {
                             baslangic = satir;
                             --satir;
                             ++sayac;
-                            vurus++;
-                            System.out.println("Geminin"+vurus+". birimi vuruldu.");
-                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurus) + " ")) {
+                            vurulanBirim++;
+                            System.out.println("Geminin"+vurulanBirim+". birimi vuruldu.");
+                            if (karsitahta[ilksatir][ilksutun].equals(String.valueOf(vurulanBirim) + " ")) {
                                 System.out.println("Gemi batırıldı.");
                                 turn=1;
-                                yeniHamleYonu = 1;
+                                hamleYonu = 1;
                                 cevreIsaret(baslangic, bitis, ilksutun, karsitahta, gemiYatay);
-                                vurus = 0;
+                                vurulanBirim = 0;
                                 break;
                             }
                         }
                     }
                     break;
             }
-
         } catch (ArrayIndexOutOfBoundsException var7) {
             System.out.println("Tahta dışına çıkma hatası: " + var7.getMessage());
         }
-return turn;
+        return turn;
     }
 
 
