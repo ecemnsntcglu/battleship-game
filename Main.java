@@ -1,10 +1,9 @@
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
         Play play = new Play();
-        int hamleSayisi = 20;
         play.oyunaGiris();
         if (Play.kimleOynaniyor() == 1) {
             Bilgisayar bilgisayar = new Bilgisayar();
@@ -30,24 +29,27 @@ public class Main {
             Play.tahtayiDoldur(Bilgisayar.oyuncu.hamleTahta);
             Play.tahtayiDoldur(Bilgisayar.hamleTahta);
 
-            while (hamleSayisi > 0) {
+            while (Bilgisayar.oyuncu.hamleSayac> 0) {
                 System.out.println(Bilgisayar.oyuncu.oyuncuAdi + " sırası:\n");
-                System.out.println("HAMLE SAYISI: " + hamleSayisi);
+                System.out.println("HAMLE SAYISI: " + Bilgisayar.oyuncu.hamleSayac);
                 Play.tahtayiYazdir(Bilgisayar.oyuncu.hamleTahta);
                 if (!Bilgisayar.oyuncu.vur(Bilgisayar.bilgisayarTahta)) {
+                    Thread.sleep(2000);
                     System.out.println("Bilgisayarın sırası:\n");
                     if (!Bilgisayar.atisKontrolBilgisayar(Bilgisayar.oyuncu.tahta)) {
                         Play.tahtayiYazdir(Bilgisayar.hamleTahta);
+                        Thread.sleep(2000);
                         System.out.println(Bilgisayar.oyuncu.oyuncuAdi + ": " + Bilgisayar.oyuncu.sayac);
                         System.out.println("Bilgisyar : " + Bilgisayar.sayac);
-                        --hamleSayisi;
                     } else {
                         System.out.println("TÜM GEMİLER BATIRILDII!");
                         System.out.println("BİLGİSAYAR KAZANDI!!");
+                        break;
                     }
                 } else {
                     System.out.println("TÜM GEMİLER BATIRILDII!");
                     System.out.println(Bilgisayar.oyuncu.oyuncuAdi + " KAZANDI!!");
+                    break;
                 }
             }
 
@@ -101,23 +103,22 @@ public class Main {
             System.out.println("----------OYUN BAŞLADI!!----------");
             Play.tahtayiDoldur(oyuncu1.hamleTahta);
             Play.tahtayiDoldur(oyuncu2.hamleTahta);
-
-            while (hamleSayisi > 0) {
+            while (oyuncu2.hamleSayac> 0) {
                 System.out.println(oyuncu1.oyuncuAdi + " adlı oyuncu sırası:\n");
                 if (!oyuncu1.vur(oyuncu2.tahta)) {
                     System.out.println(oyuncu2.oyuncuAdi + " adlı oyuncu sırası:\n");
                     if (!oyuncu2.vur(oyuncu1.tahta)) {
                         System.out.println(oyuncu1.oyuncuAdi + ": " + oyuncu1.sayac);
                         System.out.println(oyuncu2.oyuncuAdi + ": " + oyuncu2.sayac);
-                        --hamleSayisi;
                     } else {
                         System.out.println(oyuncu2.oyuncuAdi + " KAZANDI!!");
+                        break;
                     }
                 } else {
                     System.out.println(oyuncu1.oyuncuAdi + " KAZANDI!!");
+                    break;
                 }
             }
-
             System.out.println("OYUN BİTTİ.");
             if (oyuncu1.sayac > oyuncu2.sayac) {
                 System.out.println(oyuncu1.oyuncuAdi + " KAZANDI!!");
