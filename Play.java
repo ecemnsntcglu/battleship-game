@@ -1,11 +1,11 @@
 
 
-import java.util.InputMismatchException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Play {
+    Random rndGemi = new Random();
     static int tahtaBuyuklugu;
-    int ekle = 0;
     static int[] gemiBoyutlari = {1, 2, 3, 4};
     static Scanner cvp = new Scanner(System.in);
     static boolean kuralDisiMi;
@@ -64,7 +64,6 @@ public class Play {
         } while (kuralDisiMi);
         return cevapKimle;
     }
-
 
     public static void tahtayiDoldur(String[][] tahta) {
         for (int i = 0; i < tahtaBuyuklugu; i++) {
@@ -164,5 +163,26 @@ public class Play {
         }
         System.out.println(" ");
     }
+
+    public void gemileriYerlestirB(String [][] tahta1) {
+        int[] gemiBoyutlari1 = Play.gemiBoyutlari;
+        for (int gemiBoyutu=4;gemiBoyutu>0;gemiBoyutu--) {
+
+            for (int k = 1; k <= (5 - gemiBoyutu); k++) {
+                int randomSatir;
+                int randomSutun;
+                boolean gemiYatayMi;
+                do {
+                    randomSatir = rndGemi.nextInt(Play.tahtaBuyuklugu);
+                    randomSutun = rndGemi.nextInt(Play.tahtaBuyuklugu);
+                    gemiYatayMi = rndGemi.nextBoolean();
+                } while (!Play.gemininKonumuDogruMu(gemiYatayMi, randomSatir, randomSutun, gemiBoyutu, tahta1));
+
+                yerlestir(gemiYatayMi, randomSatir, randomSutun, tahta1, gemiBoyutu);
+            }
+        }
+
+    }
+
 }
 
