@@ -1,133 +1,268 @@
-import java.util.Scanner;
+import java.util.Random;
 
-public class Main {
-    public static void main(String[] args) throws InterruptedException {
-        Scanner input = new Scanner(System.in);
-        Play play = new Play();
-        play.oyunaGiris();
-        if (Play.kimleOynaniyor() == 1) {
-            Bilgisayar bilgisayar = new Bilgisayar();
-            System.out.println("Bilgisayarla oynayacaksınız.");
-            Play.tahtayiDoldur(Bilgisayar.oyuncu.tahta);
-            Play.tahtayiYazdir(Bilgisayar.oyuncu.tahta);
-            System.out.println("Gemileri rasgele yerleştirmek için 'R' yi kendin yerleştirmek için 'k' yi tuşla...");
-            char kim = input.next().toLowerCase().charAt(0);
-            if (kim == 'r') {
-                play.gemileriYerlestirB(Bilgisayar.oyuncu.tahta);
-                Play.tahtayiYazdir(Bilgisayar.oyuncu.tahta);
-            } else {
-                Bilgisayar.oyuncu.gemileriYerlestir();
-            }
-            Play.tahtayiDoldur(Bilgisayar.bilgisayarTahta);
-            bilgisayar.gemileriYerlestirB(Bilgisayar.bilgisayarTahta);
-            System.out.println("bilgisayar gemileri yerleştirildi");
-            for (int i = 0; i < 50; ++i) {
-                System.out.println("\n\n\n");
-            }
-            Play.tahtayiYazdir(Bilgisayar.oyuncu.tahta);
-            System.out.println("----------OYUN BAŞLADI!!----------");
-            Play.tahtayiDoldur(Bilgisayar.oyuncu.hamleTahta);
-            Play.tahtayiDoldur(Bilgisayar.hamleTahta);
+public class Bilgisayar extends Play {
+    static Oyuncu oyuncu = new Oyuncu("KULLANICI");
+    static int sayac = 0;
+    static boolean kazandiMi = false;
+    static String[][] hamleTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
+    static String[][] bilgisayarTahta = new String[tahtaBuyuklugu][tahtaBuyuklugu];
+    static int hamleKontrol=0;
+    public Bilgisayar() {
+    }
 
-            while (Bilgisayar.oyuncu.hamleSayac> 0) {
-                System.out.println(Bilgisayar.oyuncu.oyuncuAdi + " sırası:\n");
-                System.out.println("HAMLE SAYISI: " + Bilgisayar.oyuncu.hamleSayac);
-                Play.tahtayiYazdir(Bilgisayar.oyuncu.hamleTahta);
-                if (!Bilgisayar.oyuncu.vur(Bilgisayar.bilgisayarTahta)) {
-                    Thread.sleep(2000);
-                    System.out.println("Bilgisayarın sırası:\n");
-                    if (!Bilgisayar.atisKontrolBilgisayar(Bilgisayar.oyuncu.tahta)) {
-                        Play.tahtayiYazdir(Bilgisayar.hamleTahta);
-                        Thread.sleep(2000);
-                        System.out.println(Bilgisayar.oyuncu.oyuncuAdi + ": " + Bilgisayar.oyuncu.sayac);
-                        System.out.println("Bilgisyar : " + Bilgisayar.sayac);
-                    } else {
-                        System.out.println("TÜM GEMİLER BATIRILDII!");
-                        System.out.println("BİLGİSAYAR KAZANDI!!");
-                        break;
-                    }
-                } else {
-                    System.out.println("TÜM GEMİLER BATIRILDII!");
-                    System.out.println(Bilgisayar.oyuncu.oyuncuAdi + " KAZANDI!!");
+    public void gemileriYerlestir() {
+        Random rndGemi = new Random();
+        int[] gemiBoyutlari1 = Play.gemiBoyutlari;
+        int uzunluk = gemiBoyutlari1.length;
+
+        for (int gemiBoyutu : gemiBoyutlari1) {
+            for (int k = 1; k <= (5 - gemiBoyutu); k++) {
+
+                int randomSatir;
+                int randomSutun;
+                boolean gemiYatayMi;
+                do {
+                    randomSatir = rndGemi.nextInt(Play.tahtaBuyuklugu);
+                    randomSutun = rndGemi.nextInt(Play.tahtaBuyuklugu);
+                    gemiYatayMi = rndGemi.nextBoolean();
+                } while (!Play.gemininKonumuDogruMu(gemiYatayMi, randomSatir, randomSutun, gemiBoyutu, bilgisayarTahta));
+
+                yerlestir(gemiYatayMi, randomSatir, randomSutun, bilgisayarTahta, gemiBoyutu);
+            }
+
+        }
+
+    }
+
+    public static boolean atisKontrolBilgisayar(String[][] kullanici1Tahta) {
+        Bilgisayar.hamleKontrol=0;
+        Random random = new Random();
+        int hamleSatir = random.nextInt(0, Play.tahtaBuyuklugu);
+        int hamleSutun = random.nextInt(0, Play.tahtaBuyuklugu);
+        if (!hamleTahta[hamleSatir][hamleSutun].equals("X ") && !hamleTahta[hamleSatir][hamleSutun].equals(". ")) {
+            switch (kullanici1Tahta[hamleSatir][hamleSutun]) {
+                case "0 ":
+                case ". ":
+                    System.out.println("Bilgisayar isabetsiz atış yaptı.");
+                    hamleTahta[hamleSatir][hamleSutun] = ". ";
                     break;
-                }
-            }
-
-            System.out.println("HAMLE BİTTİ.");
-            if (Bilgisayar.oyuncu.sayac > Bilgisayar.sayac) {
-                System.out.println(Bilgisayar.oyuncu.oyuncuAdi + " KAZANDI!!");
-            } else if (Bilgisayar.sayac > Bilgisayar.oyuncu.sayac) {
-                System.out.println("BİLGİSAYAR KAZANDI!!");
-            } else {
-                System.out.println("Berabere :)");
+                case "1 ":
+                    System.out.println("Bilgisayar isabetli atış yaptı.DENİZALTINIZ BATIRILDI!");
+                    cevreIsaret(hamleSutun,hamleSutun,hamleSatir,kullanici1Tahta,true);
+                    ++sayac;
+                    hamleTahta[hamleSatir][hamleSutun] = "X ";
+                    atisKontrolBilgisayar(kullanici1Tahta);
+                    break;
+                case "2 ":
+                    System.out.println("Bilgisayar isabetli atış yaptı.MAYIN GEMİNİZ VURULDU!");
+                    bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, kullanici1Tahta, 0, 0);
+                    break;
+                case "3 ":
+                    System.out.println("Bilgisayar isabetli atış yaptı.KRUVAZÖR VURULDU!");
+                    bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, kullanici1Tahta, 0, 0);
+                    break;
+                case "4 ":
+                    System.out.println("Bilgisayar isabetli atış yaptı.AMİRAL VURULDU!");
+                    bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, kullanici1Tahta, 0, 0);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + kullanici1Tahta[hamleSatir][hamleSutun]);
             }
         } else {
-            System.out.println("Arkadaşınızla oynayacaksınız.");
-            System.out.println("1. Oyuncu NICKNAME: ");
-            String ad = input.next();
-            Oyuncu oyuncu1 = new Oyuncu(ad);
-            Play.tahtayiDoldur(oyuncu1.tahta);
-            Play.tahtayiYazdir(oyuncu1.tahta);
-            System.out.println("Gemileri rasgele yerleşyirmek için 'R' yi kendin yerleştirmek için 'K' yi tuşla...");
-            char kim = input.next().toLowerCase().charAt(0);
-            if (kim == 'r') {
-                play.gemileriYerlestirB(oyuncu1.tahta);
-                Play.tahtayiYazdir(oyuncu1.tahta);
-            }
-            else{
-                oyuncu1.gemileriYerlestir();
-            }
+            atisKontrolBilgisayar(kullanici1Tahta);
+        }
 
-            System.out.println("\nSıra arkadaşınızda,herhangi bir tuşa bas!!");
-            input.next();
-            for (int i = 0; i < 50; ++i) {
-                System.out.println("\n\n\n");
-            }
-            System.out.println("2. Oyuncu NICKNAME: ");
-            ad = input.next();
-            Oyuncu oyuncu2 = new Oyuncu(ad);
-            Play.tahtayiDoldur(oyuncu2.tahta);
-            Play.tahtayiYazdir(oyuncu2.tahta);
-            System.out.println("Gemileri rasgele yerleşyirmek için 'R' yi kendin yerleştirmek için 'K' yi tuşla...");
-            kim = input.next().toLowerCase().charAt(0);
-            if (kim == 'r') {
-                play.gemileriYerlestirB(oyuncu2.tahta);
-                Play.tahtayiYazdir(oyuncu2.tahta);
-            }else{
-                oyuncu2.gemileriYerlestir();
-            }
-            for (int i = 0; i < 50; ++i) {
-                System.out.println("\n\n\n\n");
-            }
+        return kazandiMi;
+    }
 
-            System.out.println("----------OYUN BAŞLADI!!----------");
-            Play.tahtayiDoldur(oyuncu1.hamleTahta);
-            Play.tahtayiDoldur(oyuncu2.hamleTahta);
-            while (oyuncu2.hamleSayac> 0) {
-                System.out.println(oyuncu1.oyuncuAdi + " adlı oyuncu sırası:\n");
-                if (!oyuncu1.vur(oyuncu2.tahta)) {
-                    System.out.println(oyuncu2.oyuncuAdi + " adlı oyuncu sırası:\n");
-                    if (!oyuncu2.vur(oyuncu1.tahta)) {
-                        System.out.println(oyuncu1.oyuncuAdi + ": " + oyuncu1.sayac);
-                        System.out.println(oyuncu2.oyuncuAdi + ": " + oyuncu2.sayac);
-                    } else {
-                        System.out.println(oyuncu2.oyuncuAdi + " KAZANDI!!");
-                        break;
+    public static void bilgisayarHamleAlgoritmasi(int hamleSatir, int hamleSutun, String[][] kullanici1Tahta, int hamleYonu, int vurulanBirim) {
+        int yeniHamleYonu;
+        if (hamleYonu == 0) {
+            Random random = new Random();
+            yeniHamleYonu = random.nextInt(1, 5);
+            Bilgisayar.hamleKontrol = 0;
+        } else {
+            yeniHamleYonu = hamleYonu;
+        }
+
+        try {
+            switch (yeniHamleYonu) {
+                case 1:
+                    while (hamleSutun < Play.tahtaBuyuklugu && hamleSutun >= 0 && !kullanici1Tahta[hamleSatir][hamleSutun].equals("0 ") && !kullanici1Tahta[hamleSatir][hamleSutun].equals(". ")) {
+                        hamleTahta[hamleSatir][hamleSutun] = "X ";
+                        hamleSutun++;
+                        vurulanBirim++;
+                        sayac++;
                     }
-                } else {
-                    System.out.println(oyuncu1.oyuncuAdi + " KAZANDI!!");
+                    if (hamleSutun < Play.tahtaBuyuklugu && hamleSutun >= 0) {
+                        hamleSutun--;
+                    }
+                    bilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim, yeniHamleYonu);
                     break;
+                case 2:
+                    while (hamleSutun >= 0 && hamleSutun < Play.tahtaBuyuklugu && !kullanici1Tahta[hamleSatir][hamleSutun].equals("0 ") && !kullanici1Tahta[hamleSatir][hamleSutun].equals(". ")) {
+                        hamleTahta[hamleSatir][hamleSutun] = "X ";
+                        hamleSutun--;
+                        vurulanBirim++;
+                        sayac++;
+                    }
+                    if (hamleSutun >= 0 && hamleSutun < Play.tahtaBuyuklugu) {
+                        hamleSutun++;
+                    }
+                    bilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim, yeniHamleYonu);
+                    break;
+                case 3:
+                    while (hamleSatir < Play.tahtaBuyuklugu && hamleSatir >= 0 && !kullanici1Tahta[hamleSatir][hamleSutun].equals("0 ") && !kullanici1Tahta[hamleSatir][hamleSutun].equals(". ")) {
+                        hamleTahta[hamleSatir][hamleSutun] = "X ";
+                        hamleSatir++;
+                        vurulanBirim++;
+                        sayac++;
+                    }
+                    if (hamleSatir < Play.tahtaBuyuklugu && hamleSatir >= 0) {
+                        hamleSatir--;
+                    }
+                    bilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim, yeniHamleYonu);
+                    break;
+                case 4:
+                    while (hamleSatir >= 0 && hamleSatir < Play.tahtaBuyuklugu && !kullanici1Tahta[hamleSatir][hamleSutun].equals("0 ") && !kullanici1Tahta[hamleSatir][hamleSutun].equals(". ")) {
+                        hamleTahta[hamleSatir][hamleSutun] = "X ";
+                        hamleSatir--;
+                        vurulanBirim++;
+                        sayac++;
+                    }
+                    if (hamleSatir >= 0 && hamleSatir < Play.tahtaBuyuklugu) {
+                        hamleSatir++;
+                    }
+                    bilgisayarHamleSonucu(hamleSatir, hamleSutun, kullanici1Tahta, vurulanBirim, yeniHamleYonu);
+                    break;
+            }
+        } catch (ArrayIndexOutOfBoundsException var7) {
+            System.out.println("Tahta dışına çıkma hatası: " + var7.getMessage());
+        }
+    }
+
+
+
+    public static void bilgisayarHamleSonucu(int hamleSatir, int hamleSutun, String[][] kullanici1Tahta, int vurulanBirim, int hamleYonu) {
+         if (vurulanBirim==1&&(Bilgisayar.hamleKontrol == 2)) {
+            if(hamleYonu==1||hamleYonu==2){
+                hamleYonu=4;
+            } else if (hamleYonu==3||hamleYonu==4) {
+                hamleYonu=2;
+            }
+            gemiKalanKismiVur(hamleSatir, hamleSutun, kullanici1Tahta, hamleYonu, 1);
+        }
+         else if (vurulanBirim==1&&(Bilgisayar.hamleKontrol == 1)) {
+             if(hamleYonu==1||hamleYonu==2){
+                 hamleYonu=3;
+             } else if (hamleYonu==3||hamleYonu==4) {
+                 hamleYonu=1;
+             }
+             gemiKalanKismiVur(hamleSatir, hamleSutun, kullanici1Tahta, hamleYonu, 1);
+         }
+         else if (vurulanBirim == 1) {
+            System.out.println("Bilgisayarın 2. atışı başarısızlıkla sonuçlandı.");
+            gemiKalanKismiVur(hamleSatir, hamleSutun, kullanici1Tahta, hamleYonu, 1);
+        }
+        else if (vurulanBirim == 2) {
+            switch (kullanici1Tahta[hamleSatir][hamleSutun]) {
+                case "2 ":
+                    System.out.println("Bilgisayar isabetli atış yaptı.MAYIN GEMİNİZ BATIRILDI!");
+                    System.out.println("Hamle sırası tekrar bilgisayarın.");
+                    atisKontrolBilgisayar(kullanici1Tahta);
+                    break;
+                case "3 ":
+                    System.out.println("Bilgisayar KRUVAZÖR'ÜN 2 birimini vurdu!");
+                    System.out.println("3. atış başarısızlıkla sonuçlandı.");
+                    gemiKalanKismiVur(hamleSatir, hamleSutun, kullanici1Tahta, hamleYonu, 2);
+                    break;
+                case "4 ":
+                    System.out.println("Bilgisayar AMİRAL'İN 2 birimini vurdu!");
+                    System.out.println("3. atış başarısızlıkla sonuçlandı.");
+                    gemiKalanKismiVur(hamleSatir, hamleSutun, kullanici1Tahta, hamleYonu, 2);
+            }
+        } else if (vurulanBirim == 3) {
+            switch (kullanici1Tahta[hamleSatir][hamleSutun]) {
+                case "3 ":
+                    System.out.println("Bilgisayar 2 isabetli atış yaptı.KRUVAZÖR BATIRILDI!");
+                    System.out.println("Hamle sırası tekrar bilgisayarın.");
+                    atisKontrolBilgisayar(kullanici1Tahta);
+                    break;
+                case "4 ":
+                    System.out.println("Bilgisayar AMİRAL'İN 3 birimini vurdu!");
+                    System.out.println("4. atış başarısızlıkla sonuçlandı.");
+                    gemiKalanKismiVur(hamleSatir, hamleSutun, kullanici1Tahta, hamleYonu, 3);
+            }
+        } else if (vurulanBirim == 4 && kullanici1Tahta[hamleSatir][hamleSutun].equals("4 ")) {
+            System.out.println("Bilgisayar 3 isabetli atış yaptı.AMİRAL BATIRILDI!");
+            System.out.println("Hamle sırası tekrar bilgisayarın.");
+            atisKontrolBilgisayar(kullanici1Tahta);
+        }
+
+    }
+
+    public static void gemiKalanKismiVur(int hamleSatir, int hamleSutun, String[][] karsiTahta, int hamleYonu, int vurulanBirim) {
+        System.out.println("HAMLE SIRASI KULLANICININ");
+        Bilgisayar.hamleKontrol++;
+        Play.tahtayiYazdir(Bilgisayar.hamleTahta);
+        oyuncu.vur(karsiTahta);
+        vurulanBirim=0;
+        System.out.println("HAMLE SIRASI BİLGİSAYARIN");
+        switch (hamleYonu) {
+            case 1:
+                bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, karsiTahta, 2, vurulanBirim);
+                break;
+            case 2:
+                bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, karsiTahta, 1, vurulanBirim);
+                break;
+            case 3:
+                bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, karsiTahta, 4, vurulanBirim);
+                break;
+            case 4:
+                bilgisayarHamleAlgoritmasi(hamleSatir, hamleSutun, karsiTahta, 3, vurulanBirim);
+        }
+    }
+
+    public static void cevreIsaret(int bas, int bit, int sbt, String[][] karsiTahta, boolean gemiYatay) {
+        int cevre;
+        if (gemiYatay) {
+            for (cevre = bas; cevre <= bit; ++cevre) {
+                if (sbt + 1 < tahtaBuyuklugu - 1 && karsiTahta[sbt + 1][cevre].equals(". ")) {
+                    hamleTahta[sbt + 1][cevre] = ". ";
+                }
+
+                if (sbt > 0 && karsiTahta[sbt - 1][cevre].equals(". ")) {
+                    hamleTahta[sbt - 1][cevre] = ". ";
+                }
+
+                if (cevre + 1 < tahtaBuyuklugu - 1 && karsiTahta[sbt][cevre + 1].equals(". ")) {
+                    hamleTahta[sbt][cevre + 1] = ". ";
+                }
+
+                if (cevre > 0 && karsiTahta[sbt][cevre - 1].equals(". ")) {
+                    hamleTahta[sbt][cevre - 1] = ". ";
                 }
             }
-            System.out.println("OYUN BİTTİ.");
-            if (oyuncu1.sayac > oyuncu2.sayac) {
-                System.out.println(oyuncu1.oyuncuAdi + " KAZANDI!!");
-            } else if (oyuncu2.sayac > oyuncu1.sayac) {
-                System.out.println(oyuncu2.oyuncuAdi + " KAZANDI!!");
-            } else {
-                System.out.println("Berabere :)");
+        } else {
+            for (cevre = bas; cevre <= bit; ++cevre) {
+                if (cevre + 1 < tahtaBuyuklugu - 1 && karsiTahta[cevre + 1][sbt] == ". ") {
+                    hamleTahta[cevre + 1][sbt] = ". ";
+                }
+
+                if (cevre > 0 && karsiTahta[cevre - 1][sbt] == ". ") {
+                    hamleTahta[cevre - 1][sbt] = ". ";
+                }
+
+                if (sbt + 1 < tahtaBuyuklugu - 1 && karsiTahta[cevre][sbt + 1] == ". ") {
+                    hamleTahta[cevre][sbt + 1] = ". ";
+                }
+
+                if (sbt > 0 && karsiTahta[cevre][sbt - 1].equals(". ")) {
+                    hamleTahta[cevre][sbt - 1] = ". ";
+                }
             }
         }
 
     }
+
 }
