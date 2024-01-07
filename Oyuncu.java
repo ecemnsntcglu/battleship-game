@@ -13,7 +13,7 @@ public class Oyuncu extends Play {
     int baslangic = 0;//cevreyi isaretlemek için
     int bitis = 0;//cevreyi isaretlemek için
     boolean gemiYatay = false;
-
+    int hamleSayac=20;
     Oyuncu(String ad) {
         this.oyuncuAdi = ad;
     }
@@ -93,7 +93,7 @@ public class Oyuncu extends Play {
     }
 
     public boolean vur(String[][] karsitahta) {
-
+        hamleSayac--;
         Scanner hamle = new Scanner(System.in);
         System.out.println("Vurmak İstediğin Koordinatı Gir!");
         int turn = 1;
@@ -111,11 +111,11 @@ public class Oyuncu extends Play {
                 switch (vurus) {
                     case 0:
                         if (!karsitahta[satir][sutun].equals("0 ")&& !karsitahta[satir][sutun].equals(". ")) {
+                            ilkVurulanSutun = sutun;
                             ilkVurulanSatir = satir;
                             baslangic=ilkVurulanSatir;
                             bitis=ilkVurulanSatir;
                             sbt=sutun;
-                            ilkVurulanSutun = sutun;
                             vurus++;
                         }
                         break;
@@ -151,11 +151,11 @@ public class Oyuncu extends Play {
                         } else if(!karsitahta[satir][sutun].equals("0 ") && !karsitahta[satir][sutun].equals(". ")){
                             vurus++;
                             if(gemiYatay){
-                                baslangic = Math.min(sutun, ilkVurulanSutun);
-                                bitis = Math.max(sutun, ilkVurulanSutun);
-                        }else{
-                                baslangic = Math.min(satir, ilkVurulanSatir);
-                                bitis = Math.max(satir, ilkVurulanSatir);
+                                baslangic = Math.min(sutun, baslangic);
+                                bitis = Math.max(sutun, bitis);
+                            }else{
+                                baslangic = Math.min(satir, baslangic);
+                                bitis = Math.max(satir,bitis);
                             }
                         }
                 }
